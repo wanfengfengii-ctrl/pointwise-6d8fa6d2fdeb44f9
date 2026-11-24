@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from fractions import Fraction
 from hashlib import sha256
 
+from routes.merger import MergeProvenance
 from station.time_law import RationalTimeLaw
 from storage import canonical_json
 
@@ -33,12 +34,26 @@ class EntryEvidence:
 class StationArtifact:
     identity: ArtifactIdentity
     entries: tuple[EntryEvidence, ...]
+    merge: MergeProvenance | None = None
+
+
+def merge_block(merge: MergeProvenance) -> dict:
+    return {
+        'station': merge.station,
+        'revision': merge.revision,
+        'parent': merge.parent,
+        'left': merge.left,
+        'right': merge.right,
+        'decisions': [
+            [index, category, field, side]
+            for index, (category, _name, field, side) in enumerate(merge.decisions, 1)
+        ],
+    }
 
 
 def _evidence_body(artifact: StationArtifact) -> dict:
     identity = artifact.identity
-    return {
-        'format': 1,
+    body = {
         'piece_id': identity.piece_id,
         'station': identity.station,
         'revision': identity.revision,
@@ -54,6 +69,11 @@ def _evidence_body(artifact: StationArtifact) -> dict:
             for entry in sorted(artifact.entries, key=lambda entry: entry.name)
         ],
     }
+    if artifact.merge is None:
+        body = {'format': 1, **body}
+    else:
+        body = {'format': 2, 'merge': merge_block(artifact.merge), **body}
+    return body
 
 
 def evidence_digest(body: dict) -> str:

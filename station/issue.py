@@ -17,5 +17,6 @@ def freeze_station(revisions: RevisionStore, evidence: EvidenceStore, station: s
     issued = evidence.get(identity.piece_id)
     if issued is not None:
         return issued
-    artifact = StationArtifact(identity, derive_first_exits(revision))
+    merge = revisions.merge_provenance(station, revision_id)
+    artifact = StationArtifact(identity, derive_first_exits(revision), merge)
     return evidence.save(artifact)
