@@ -1,0 +1,5 @@
+{
+  "A": {"entries": {"intake": "private_a"}, "steps": {"private_a": [["handoff", "1/2", 0, "intake"], ["step", "1/2", 1, "private_a"]]}},
+  "A_correction": {"entries": {"intake": "private_a"}, "steps": {"private_a": [["handoff", "1/2", 0, "intake"], ["step", "1/2", 0, "private_a"]]}},
+  "B": {"entries": {"intake": "private_b"}, "steps": {"private_b": [["release", "1/2", 0, null], ["handoff", "1/4", 0, "intake"], ["hold", "1/4", 0, null]]}}
+}
